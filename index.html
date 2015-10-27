@@ -9,6 +9,11 @@
 </head>
 <body>
 	<div class="appBox">
+		<div class="infoBox">
+			<h2>Information</h2>
+			<p>The object of the game is to guess which city has a population that ranks in the middle of the options. This may prove more challenging than asking which city is the largest or smallest, because it requires you to factor in each of the available answers.</p>
+			<button name='closeInfo' id='closeInfo' class='button'>Close</button>
+		</div>
 		<div class="header">
 			<div class="menu">
 				<button name='info' id='info' class='button'>Info</button>
@@ -18,24 +23,30 @@
 			<img src="images/skyline.png" alt="Smiley face" width="800"></img>
 		</div>
 		<div class="quizContent">
-			<h2>Select the 2nd Most Populated City</h2>
-			<div class="answerBox">
-				<button name="answerButton" id="answerButton" class="button">Detriot</button>
-				<button name="answerButton" id="answerButton" class="button">Rome</button>
-				<button name="answerButton" id="answerButton" class="button">Moscow</button>
-			</div>
+			<h2>Welcome to the Middle Cities quiz!</h2>
+			<p>Please click Info to learn the rules of the game, or press New Game to get started!</p>
+			<div class="answerBox"></div>
+		</div>
+		<div class="resultBox">
+			<h3></h3>
+			<button name="nextQuestion" id="nextQuestion" class="button">Next Question</button>
+		</div>
+		<div class="finalResult">
+			<h2>Congratulations on Finishing!</h2>
+			<h3></h3>
 		</div>
 		<div class="scoreboard">
-			<div class="scoreBox correct">✓</div>
-			<div class="scoreBox incorrect">X</div>
-			<div class="scoreBox correct">X</div>
-			<div class="scoreBox correct">✓</div>
-			<div class="scoreBox incorrect">X</div>
-			<div class="scoreBox correct">✓</div>
-			<div class="scoreBox current">?</div>
 			<div class="scoreBox empty"></div>
 			<div class="scoreBox empty"></div>
 			<div class="scoreBox empty"></div>
+			<div class="scoreBox empty"></div>
+			<div class="scoreBox empty"></div>
+			<div class="scoreBox empty"></div>
+			<div class="scoreBox empty"></div>
+			<div class="scoreBox empty"></div>
+			<div class="scoreBox empty"></div>
+			<div class="scoreBox empty"></div>
+			<div class="scoreBox hidden"></div>
 		</div>
 	</div>
 </body>

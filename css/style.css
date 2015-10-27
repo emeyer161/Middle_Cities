@@ -1,6 +1,9 @@
 body {
 	background-image: url('../images/concrete.png');
 }
+*:focus {
+    outline: none;
+}
 
 .appBox {
 	position: relative;
@@ -11,6 +14,81 @@ body {
 	top:50px;
 	box-shadow: 5px 5px 5px;
 }
+
+.infoBox {
+	z-index:12;
+	display: none;
+	position: absolute;
+	width:530px;
+	height: 200px;
+	margin-left:115px;
+	margin-top:170px;
+	padding: 10px 20px 20px 20px;
+	background-color: #D1874F;
+	box-shadow: 5px 5px 5px;
+	text-align: center;
+	font-size: larger;
+}
+	.infoBox h2 {
+		color: white;
+		text-shadow:1px 1px 1px black;
+	}
+	.infoBox button {
+			background-color: white;
+			width: 200px;
+			height: 60px;
+			margin-left: 0px;
+			margin-top: 0px;
+			font-size: 25px;
+			font-family: 'Verdana';
+			box-shadow:1px 1px 5px black;
+			border-radius: 30px;
+	}
+
+.resultBox {
+	z-index:10;
+	display: none;
+	color: white;
+	position: absolute;
+	width: 400px;
+	height: 230px;
+	margin-left: 200px;
+	margin-top: 250px;
+	box-shadow: 5px 5px 5px;
+	text-align: center;
+	border: 2px solid black;
+}
+	.resultBox h3 {
+		font-size: 60px;
+	}
+	.resultBox button {
+		background-color: white;
+		width: 200px;
+		height: 60px;
+		margin-left: 0px;
+		margin-top:13px;
+		font-size: 25px;
+		font-family: 'Verdana';
+		box-shadow:1px 1px 5px black;
+		border-radius: 30px;
+	}
+
+.finalResult {
+	z-index:11;
+	display: none;
+	position: absolute;
+	width:500px;
+	margin-left:150px;
+	margin-top:240px;
+	background-color: #D1874F;
+	box-shadow: 5px 5px 5px;
+	text-align: center;
+}
+	.finalResult h2 {
+		font-size: larger;
+		color: white;
+		text-shadow:1px 1px 1px black;
+	}
 
 .header {
 	background-color: #7ec0ee;
@@ -29,6 +107,7 @@ body {
 		bottom: 0px;
 	}
 	.header .menu {
+		z-index:9;
 		position: absolute;
 		width:800px;
 		top: 0px;
@@ -39,6 +118,17 @@ body {
 		text-align: center;
 		font-size: 70px;
 		margin-top: 0px;
+	}
+	.header button {
+		background-color: white;
+		min-width: 80px;
+		height: 30px;
+		margin-left: 0px;
+		margin-top: 0px;
+		font-size: 12px;
+		font-family: 'Verdana';
+		box-shadow:1px 1px 5px black;
+		border-radius: 15px;
 	}
 	#info {
 			position: absolute;
@@ -56,7 +146,7 @@ body {
 	background-color: white;
 	top:150px;
 	width:800px;
-	height:465px;
+	height:500px;
 	text-align: center;
 	font-family: 'Segoe UI';
 }
@@ -79,6 +169,10 @@ body {
 		font-size: 25px;
 		font-family: 'Verdana';
 		box-shadow:1px 1px 5px black;
+		border-radius: 30px;
+		background-color: #D1874F;
+		color:white;
+		text-shadow:1px 1px 1px black;
 	}
 
 .scoreboard {
@@ -89,6 +183,7 @@ body {
 	border-top: 2px solid black;
 	background-color: black;
 	font-size: 42px;
+	display: none;
 }
 	.scoreBox {
 		display: inline-block;
@@ -96,14 +191,11 @@ body {
 		margin-left:15.5px;
 		height:50px;
 		width:50px;
-		/*border:1px solid black;*/
 		vertical-align: middle;
 		text-align: center;
 		font-family: 'Arial Rounded MT Bold';
 		color: white;
 		text-shadow:1px 1px 5px black;
-	}
-	.current, .correct, .incorrect, .empty {
 		border: 2px outset white;
 	}
 	.current {
@@ -116,7 +208,10 @@ body {
 		background-color: red;
 	}
 	.empty {
-		background-color: white
+		background-color: white;
+	}
+	.hidden {
+		display:none;
 	}
 
 
