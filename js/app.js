@@ -3,12 +3,7 @@ var cityList = [];
 $(document).ready(function () {
 
 	// Initialize the State
-	var state = {
-		numAnswers: 3,
-	  	currentQuestion: 1,
-	  	questions: [],
-	  	responses: [null,null,null,null,null,null,null,null,null,null]
-	};
+	var state = {};
 
 	// Event Listeners
 	$('#info').click(function() {
@@ -42,14 +37,19 @@ $(document).ready(function () {
 	});
 
 	// Functions
-	function newGame(){
+	function newGame() {
 		// Set the stage
 		$('.finalResult').fadeOut(400);
+		$('.resultBox').fadeOut(400);
 		$('.quizContent p').html('');
-		$('.quizContent h2').html('Select the 2nd Most Populated City');
+		$('.quizContent h2').html('Select the Middle City by Population:');
 		$('.scoreboard').fadeIn(400);
 
-		// Reset state
+		resetState();
+		render();
+	};
+
+	function resetState() {
 		state.numAnswers = 3;
 	  	state.currentQuestion = 1;
 		state.questions = genRandomQuestionsList();
@@ -83,16 +83,18 @@ $(document).ready(function () {
 
 		function renderQuestion() {
 			// loop through questions until we get to the currentQuestion index
-			for (r=0; r<10; r++) {
-				if (state.responses[r] == null) {
-					$('.answerBox button').remove();
-					// render the html for the question...
-					for (a=0; a<state.questions[r].length; a++) {
-						$('.answerBox').append( "<button name=\"answerButton\" id=\"answer"+(a+1)+"\" class=\"answerButton\">"+state.questions[r][a].name+"</button>" );
-					};
-				break;
+			setTimeout(function() {
+				for (r=0; r<10; r++) {
+					if (state.responses[r] == null) {
+						$('.answerBox button').remove();
+						// render the html for the question...
+						for (a=0; a<state.questions[r].length; a++) {
+							$('.answerBox').append( "<button name=\"answerButton\" id=\"answer"+(a+1)+"\" class=\"answerButton\">"+state.questions[r][a].name+"</button>" ).children().css('height', (190/state.numAnswers));
+						};
+					break;
+					}
 				}
-			}
+			}, 400);
 		};
 
 	function answerResult(inputAnswer) {
@@ -113,6 +115,7 @@ $(document).ready(function () {
 		for (a=answersDescending.length-1; a>=0; a--) {
 			$('#feedback').append('<p>'+state.questions[state.currentQuestion-1][a].name+': '+state.questions[state.currentQuestion-1][a].population.toLocaleString());
 		}
+		$('#feedback p').eq(Math.floor(answersDescending.length/2)).css('font-size', 'larger').css('font-weight', 'bold');
 		state.currentQuestion++;
 		render();
 		$('.scoreboard .scoreBox').eq(state.currentQuestion-1).toggleClass("current empty");
