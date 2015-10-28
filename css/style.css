@@ -59,14 +59,21 @@ body {
 	border: 2px solid black;
 }
 	.resultBox h3 {
+		margin-top: 15px;
 		font-size: 60px;
+	}
+	.resultBox #feedback {
+	    width: inherit;
+	    position: absolute;
+	    text-align: center;
+	    top: 77px;
 	}
 	.resultBox button {
 		background-color: white;
 		width: 200px;
 		height: 60px;
 		margin-left: 0px;
-		margin-top:13px;
+		margin-top:56px;
 		font-size: 25px;
 		font-family: 'Verdana';
 		box-shadow:1px 1px 5px black;
