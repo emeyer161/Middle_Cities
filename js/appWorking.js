@@ -1,12 +1,157 @@
 var cityList = [];
+var state = {};
+
+// Functions
+function QuizApp(inputState) {
+	if(typeof state === "string"){
+		state = JSON.parse(state);
+	}
+
+	this.state = inputState || this.resetState
+}
+
+function newGame() {
+	// Set the stage
+	$('.finalResult').fadeOut(400);
+	$('.resultBox').fadeOut(400);
+	$('.quizContent p').html('');
+	$('.quizContent h2').html('Select the Middle City by Population:');
+	$('.scoreboard').fadeIn(400);
+
+	setState({numAnswers:3});
+	setState(resetState());
+	render();
+};
+
+function resetState() {
+	return {
+		numAnswers: 3,
+	  	currentQuestion: 1,
+		questions: genRandomQuestionsList(),
+		responses: [null,null,null,null,null,null,null,null,null,null]
+	};
+};
+
+function setState (newState) {
+	var updatedState = {};
+
+	for (var prop in state) {
+		updatedState[prop] = state[prop];
+	};
+
+	for (var prop in newState) {
+		updatedState[prop] = newState[prop];
+	}
+
+	state = updatedState;
+
+	save();
+};
+
+function save() {
+	localStorage.setItem("appState", JSON.stringify(state));
+};
+
+function render(){
+  renderScores();
+  renderQuestion();
+};
+	function renderScores() {
+		$('.scoreboard .scoreBox').removeClass("empty current correct incorrect");
+		// loop through answers array and render correct/wrong/empty squares...
+		for (r=0; r<10; r++) {
+			if (state.responses[r] == 1) {
+				$('.scoreboard .scoreBox').eq(r).addClass("correct");
+				$('.scoreboard .scoreBox').eq(r).html("✓");
+			} else if (state.responses[r] == 0) {
+				$('.scoreboard .scoreBox').eq(r).addClass("incorrect");
+				$('.scoreboard .scoreBox').eq(r).html("X");
+			} else {
+				$('.scoreboard .scoreBox').eq(r).addClass("empty");
+				$('.scoreboard .scoreBox').eq(r).html("");
+			}
+		}
+		$('.scoreboard .scoreBox').eq(state.currentQuestion-1).addClass("current");
+		$('.scoreboard .scoreBox').eq(state.currentQuestion-1).removeClass("empty correct incorrect");
+		$('.scoreboard .scoreBox').eq(state.currentQuestion-1).html("?");
+	};
+
+	function renderQuestion() {
+		// loop through questions until we get to the currentQuestion index
+		setTimeout(function() {
+			for (r=0; r<10; r++) {
+				if (state.responses[r] == null) {
+					$('.answerBox button').remove();
+					// render the html for the question...
+					for (a=0; a<state.questions[r].length; a++) {
+						$('.answerBox').append( "<button name=\"answerButton\" id=\"answer"+(a+1)+"\" class=\"answerButton\">"+state.questions[r][a].name+"</button>" ).children().css('height', (190/state.numAnswers));
+					};
+				break;
+				}
+			}
+		}, 400);
+	};
+
+function answerResult(inputAnswer) {
+	var comparator = function(a,b) {
+		return parseInt(a.population) - parseInt(b.population);
+	};
+	var answersDescending = state.questions[state.currentQuestion-1].sort(comparator);
+	if (answersDescending[Math.floor(answersDescending.length/2)].name == inputAnswer){
+		state.responses[state.currentQuestion-1] = 1;
+		$('.resultBox h3').html("Correct!");
+		$('.resultBox').css('background-color', 'green');
+	} else {
+		state.responses[state.currentQuestion-1] = 0;
+		$('.resultBox h3').html("Wrong!");
+		$('.resultBox').css('background-color', 'red');
+	}
+	$('#feedback').html('');
+	for (a=answersDescending.length-1; a>=0; a--) {
+		$('#feedback').append('<p>'+state.questions[state.currentQuestion-1][a].name+': '+state.questions[state.currentQuestion-1][a].population.toLocaleString());
+	}
+	$('#feedback p').eq(Math.floor(answersDescending.length/2)).css('font-size', 'larger').css('font-weight', 'bold');
+	state.currentQuestion++;
+	render();
+	$('.scoreboard .scoreBox').eq(state.currentQuestion-1).toggleClass("current empty");
+};
+
+function genRandomQuestionsList() {
+	// Shuffle the city list
+	var shuffledCityList = shuffle(cityList);
+
+	// Build array of all question objects
+	var questionList = [];
+	for (var q=0; q<10; q++){
+		answers = [];
+		for (var a=1; a<=state.numAnswers; a++){
+			answers[a-1] = shuffledCityList[(q*state.numAnswers+a)-1];
+		};
+		questionList[q] = answers;
+	};
+	return questionList;
+};
+
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex ;
+  while (0 !== currentIndex) {
+	randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+  return array;
+};
+
+function cityConstructor(name, population) {
+	this.name = name;
+	this.population = population;
+};
 
 $(document).ready(function () {
 
-	var numAnswers = 3;
-	var questions = [];
-	var scoreTally;
-	var currentQuestion = 0;
-
+	// Event Listeners
 	$('#info').click(function() {
 		$('.infoBox').fadeIn(500);
 	});
@@ -20,122 +165,22 @@ $(document).ready(function () {
 	});
 
 	$('body').on('click', '.answerBox button',function(){
-		result(solve($(this).html()));
+		answerResult($(this).html());
 		$('.resultBox').fadeIn(400);
 	});
 
 	$('body').on('click', '.resultBox button',function(){
-		if (currentQuestion < 11){
-			questions[currentQuestion-1].setAnswers();
+		if (state.currentQuestion < 11){
+			$('.scoreboard .scoreBox').eq(state.currentQuestion-1).toggleClass("current empty");
 		} else {
+			renderScores();
 			$('.answerBox button').remove();
 			$('.quizContent h2').html('');
-			$('.finalResult h3').html('You answered <b>'+scoreTally+'0%</b> of the questions correctly!');
+			$('.finalResult h3').html('You answered <b>'+state.responses.reduce(function(a,b) {return a+b})+'0%</b> of the questions correctly!');
 			$('.finalResult').fadeIn(2000);
 		}
 		$('.resultBox').fadeOut(400);
 	});
-
-	function newGame() {
-			// Set the stage
-			$('.finalResult').fadeOut(400);
-			scoreTally = 0;
-			$('.scoreboard div').removeClass('correct incorrect current');
-			$('.scoreboard div').addClass('empty');
-			$('.scoreboard .scoreBox').eq(currentQuestion-1).html("");
-			$('.scoreboard div').html('');
-			$('.quizContent p').remove();
-			$('.quizContent h2').html('Select the 2nd Most Populated City');
-			$('.scoreboard').fadeIn(400);
-
-			// Shuffle the city list
-			shuffledCityList = shuffle(cityList);
-
-			// Build array of all question objects
-			questions = [];
-			for (var q=0; q<10; q++){
-				answers = [];
-				for (var a=1; a<=numAnswers; a++){
-					answers[a-1] = shuffledCityList[(q*numAnswers+a)-1];
-				};
-				questions[q] = new questionConstructor(answers);
-			};
-
-			// Set first question
-			questions[0].setAnswers();
-			currentQuestion = 1;
-			$('.scoreboard .scoreBox').eq(currentQuestion-1).addClass("current");
-			$('.scoreboard .scoreBox').eq(currentQuestion-1).removeClass("incorrect");
-			$('.scoreboard .scoreBox').eq(currentQuestion-1).html("?");
-	};
-
-	function solve(answer) {
-		console.log("Current question is: " +currentQuestion);
-		if (questions[currentQuestion-1].getCorrect().name == answer){
-			console.log("Correct!")
-			return true;
-		} else {
-			console.log("Wrong!")
-			return false;
-		}
-	}
-
-	function result(boolean) {
-		// Show correct or wrong
-		// Update scoreboard
-		// Set next question
-		if (boolean) {
-			$('.resultBox h3').html("Correct!");
-			$('.scoreboard .scoreBox').eq(currentQuestion-1).addClass("correct");
-			$('.scoreboard .scoreBox').eq(currentQuestion-1).removeClass("empty current");
-			$('.scoreboard .scoreBox').eq(currentQuestion-1).html("✓");
-			$('.resultBox').css('background-color', 'green');
-			scoreTally++;
-		} else {
-			$('.resultBox h3').html("Wrong!");
-			$('.scoreboard .scoreBox').eq(currentQuestion-1).addClass("incorrect");
-			$('.scoreboard .scoreBox').eq(currentQuestion-1).removeClass("empty current");
-			$('.scoreboard .scoreBox').eq(currentQuestion-1).html("X");
-			$('.resultBox').css('background-color', 'red');
-		}
-		currentQuestion++;
-	}
-
-	function questionConstructor(answerCities) {
-		// Add all answers to the answerbox
-		this.setAnswers = function() {
-			$('.answerBox button').remove();
-			for (i=0; i<answerCities.length; i++) {
-				$('.answerBox').append( "<button name=\"answerButton\" id=\"answer"+(i+1)+"\" class=\"answerButton\">"+answerCities[i].name+"</button>" );
-			};
-			$('.scoreboard .scoreBox').eq(currentQuestion-1).html("?");
-		};
-		// Returns the location of the correct answer
-		this.getCorrect = function() {
-			var comparator = function(a,b) {
-				return parseInt(a.population) - parseInt(b.population);
-			};
-			orderedAnswers = answerCities.sort(comparator);
-			return orderedAnswers[Math.ceil(orderedAnswers.length/2)-1];
-		};
-	}
-
-	function cityConstructor(name, population) {
-		this.name = name;
-		this.population = population;
-	};
-
-	function shuffle(array) {
-	  var currentIndex = array.length, temporaryValue, randomIndex ;
-	  while (0 !== currentIndex) {
-		randomIndex = Math.floor(Math.random() * currentIndex);
-	    currentIndex -= 1;
-	    temporaryValue = array[currentIndex];
-	    array[currentIndex] = array[randomIndex];
-	    array[randomIndex] = temporaryValue;
-	  }
-	  return array;
-	}
 
 	// List of all cities used
 	cityList[0] = new cityConstructor("New York", 8491079);
